@@ -1,0 +1,250 @@
+<DOCTYPE html>
+<html>
+<head>
+	<style>
+	#area {
+		width:720px;
+		height:480px;
+		background-color: black;
+		margin:auto;
+	}
+	#logo {
+		position: relative;
+		top:0px;
+		left:0px;
+
+	}
+	</style>
+	
+</head>
+<body>
+	<div id='area'><img src='minglers.png' id='logo'></div>
+	<button onclick='pausebut()' id='pause'>Start</button>
+	<button id='modee' onclick='mode()'>Mode: auto</button>
+	<p id='hits'>Hits: 0</p>
+	<p id='cornerguess'></p>
+	
+</body>
+<script>
+	var color = 1;
+	var prevcol = 1;
+    var pause = true;
+	var x = Math.floor(Math.random()* 2) + 1;
+	var y = Math.floor(Math.random()* 2) + 1;
+	
+
+	var xpos = Math.floor(Math.random()*100)+100;
+	var ypos = Math.floor(Math.random()*100)+100;
+	console.log(ypos, xpos)
+	document.getElementById('logo').style.top = ypos + 'px'
+	document.getElementById('logo').style.left = xpos + 'px'
+	var forward = false;
+	var back = false;
+	var modeee = 0;
+	var was = false;
+	var hits = 0;
+	var behind = 0;
+	var hitss = 0;
+	if (x == 1){
+		x = -1;
+	} else {
+		x = 1;
+	}
+	if (y == 1) {
+		y = -1;
+	}else {
+		y = 1;
+	}
+	window.onkeydown = function(event){
+		if (event.which == 39){
+			forward = true;
+		}else if (event.which == 37){
+			back = true;
+		}
+	}
+	window.onkeyup = function(event){
+		if (event.which == 39){
+			forward = false;
+		}else if (event.which == 37){
+			back = false;
+		}
+	}
+	function mode(){
+		if (modeee == 0){
+			document.getElementById('pause').style.visibility = 'hidden'
+			document.getElementById('modee').innerHTML = 'Mode: manual'
+			document.getElementById('cornerguess').style.visibility = 'hidden'
+			was = pause;
+			pause = false;
+			modeee = 1;
+		}else {
+			document.getElementById('cornerguess').style.visibility = 'visible'
+			document.getElementById('pause').style.visibility = 'visible'
+			document.getElementById('modee').innerHTML = 'Mode: auto'
+			pause = was;
+			modeee = 0;
+			calculate()
+		}
+	}
+	function pausebut(){
+		if (pause == true){
+			pause = false;
+			document.getElementById('pause').innerHTML = 'pause';
+			calculate();
+
+		}else{
+			pause = true;
+			document.getElementById('pause').innerHTML = 'resume';
+		}
+	}
+	function hit(){
+		if (behind == 0){
+			hits++;
+		}
+		return;
+	}
+	function calculate(){
+		var wass = pause;
+		var calxx = xpos;
+		var calyy = ypos;
+		var calx = x;
+		var caly = y;
+		hitss = 0;
+		var times = 0;
+		var corner = false;
+		pause = true;
+		while (corner == false){
+			times++;
+			var xy = 0;
+	    	if (calyy == 0){
+	    		caly = 1;
+	    		xy++
+			}
+			if (calxx == 0){
+				calx = 1;
+				xy++
+			}
+			if  (calxx == 495){
+				calx = -1;
+				xy++
+			}
+			if (calyy == 389){
+				caly = -1;
+				xy++
+			}
+			if (xy > 0){
+				hitss++
+			}
+			if (xy > 1){
+				corner = true;
+			}
+
+			calxx = calxx + calx;
+			calyy = calyy + caly;
+
+		}
+
+		pause = wass;
+		document.getElementById('cornerguess').innerHTML = 'Corner hit in: ' + hitss + ' hits'
+	}
+
+	setInterval(function() {
+	if (pause == false){
+		var lol = 0;
+		var addd = false;
+		var cal = false;
+		if (ypos == 0){
+			if (back == true){
+				y = -1;
+			}else{
+				y = 1;
+			}
+			hit()
+			lol++
+			color = color + 1;
+		}
+		if (xpos == 0){
+			if (back == true){
+				x = -1;
+			}else {
+				x = 1;
+			}
+			hit()
+			lol++
+			color = color + 1;
+		}
+		if  (xpos == 495){
+			if (back == true){
+				x = 1;
+			}else {
+				x = -1
+			}
+			hit()
+			lol++
+			color = color + 1;
+
+		}
+		if (ypos == 389){
+			if (back == true){
+				y = 1;
+			}else {
+				y = -1;
+			}
+			hit()
+			lol++
+			color = color + 1;
+		}
+		if (lol > 0){
+			hitss = hitss - 1;
+			document.getElementById('cornerguess').innerHTML = 'Corner hit in: ' + hitss + ' hits'
+			if (lol > 1){
+				cal = true;
+			}
+		}
+		if (modeee == 1){
+			if(forward == true && back != true){
+				xpos = xpos + x;
+				ypos = ypos + y;
+				if (behind > 0){
+					behind = behind-1;
+				}	
+			}else if (back == true && forward != true){
+				xpos = xpos - x;
+				ypos = ypos - y;
+				behind++;	
+			}else {
+				return;
+			}
+		}else{
+			xpos = xpos + x;
+			ypos = ypos + y;
+			if (behind > 0){
+				behind = behind-1;
+			}	
+		}
+		document.getElementById('hits').innerHTML = 'Hits: ' + hits + '\n (only calculates new hits)';
+		document.getElementById('logo').style.left = xpos + 'px';
+		document.getElementById('logo').style.top = ypos + 'px';
+
+        if (color > prevcol) {
+        	if (color % 2 == 0) {
+			 document.getElementById('logo').src = 'movies.png';
+			 prevcol = color;
+			
+		     } else {
+			 document.getElementById('logo').src = 'minglers.png';
+			 prevcol = color;
+		}
+
+
+        }
+        if (cal == true){
+        	calculate()
+        }
+	} 
+
+
+	}, 12);
+	
+	</script>
+</html>
